@@ -40,6 +40,7 @@
         Connect Wallet
       </div>
       <div
+        v-else
         @click="mintNFT"
         class="bg-purple-500 hover:bg-fuchsia-500 text-white font-bold text-2xl w-full sm:w-auto px-10 py-3 border-4 border-yellow-300 rounded-lg text-center cursor-pointer"
       >
@@ -122,12 +123,6 @@ export default {
 
     const mintNFT = async () => {
       const signer = provider.getSigner();
-      // alert(nftContract.value, nftID.value);
-      // console.log(provider);
-      // NFTCloner.connect(provider.getSigner())
-      //     .mint()
-      //     .then(console.log)
-      //     .catch(console.log);
 
       const domain = {
         name: "NFTCloner",
@@ -144,7 +139,7 @@ export default {
       };
 
       const value = {
-        contract: nftContract.value,
+        contract: ethers.utils.getAddress(nftContract.value),
         tokenId: nftID.value,
       };
 
@@ -155,9 +150,16 @@ export default {
           sendRequest(nftContract.value, nftID.value, signature);
         })
         .catch(() => {
+          // sendRequest(nftContract.value, nftID.value, signature); // FIXME: remove
           NFTCloner.connect(signer)
             .mint()
-            .then(sendRequest(nftContract.value, nftID.value, signature))
+            .then((tx) => {
+              tx.wait()
+                .then(() => {
+                  sendRequest(nftContract.value, nftID.value, signature);
+                })
+                .catch(console.log);
+            })
             .catch(console.log);
         });
     };
@@ -177,6 +179,7 @@ export default {
       axios
         .post(
           "https://us-east1-nftcloner.cloudfunctions.net/v1/metadata/update",
+          // "http://localhost:8090/hello",
           params,
           config
         )
