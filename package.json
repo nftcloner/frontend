@@ -1,0 +1,92 @@
+{
+  "name": "@nftcloner/frontend",
+  "version": "1.0.0-dev.0",
+  "description": "NFT Cloner Frontend",
+  "homepage": "https://nftcloner.xyz/",
+  "author": "Yann Guineau <yann.guineau@voidmx.net>",
+  "license": "MIT",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "format": "prettier --write \"./**/*.{js,jsx,json,vue}\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nftcloner/frontend.git"
+  },
+  "keywords": [
+    "nft",
+    "clone",
+    "twitter",
+    "frontend"
+  ],
+  "bugs": {
+    "url": "https://github.com/nftcloner/frontend/issues"
+  },
+  "dependencies": {
+    "cal-sans": "^1.0.1",
+    "core-js": "^3.20.1",
+    "js-base64": "^3.7.2",
+    "vue": "^3.0.0",
+    "vue-router": "^4.0.0-0",
+    "vuex": "^4.0.0-0"
+  },
+  "devDependencies": {
+    "@headlessui/vue": "^1.4.2",
+    "@heroicons/vue": "^1.0.5",
+    "@popperjs/core": "^2.11.0",
+    "@vue/cli-plugin-babel": "^5.0.0-rc.0",
+    "@vue/cli-plugin-eslint": "^5.0.0-rc.0",
+    "@vue/cli-plugin-router": "^5.0.0-rc.0",
+    "@vue/cli-plugin-vuex": "^5.0.0-rc.0",
+    "@vue/cli-service": "^5.0.0-rc.0",
+    "@vue/compiler-sfc": "^3.2.26",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "@walletconnect/web3-provider": "^1.7.0",
+    "autoprefixer": "^10.4.1",
+    "axios": "^0.25.0",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.32.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-vue": "^7.20.0",
+    "ethers": "^5.5.2",
+    "javascript-time-ago": "^2.3.10",
+    "jsdom": "^19.0.0",
+    "lodash": "^4.17.21",
+    "node-polyfill-webpack-plugin": "^1.1.4",
+    "numeral": "^2.0.6",
+    "postcss": "^8.4.5",
+    "prettier": "^2.5.1",
+    "stylus": "^0.56.0",
+    "stylus-loader": "^6.2.0",
+    "tailwindcss": "^3.0.8",
+    "vue-i18n": "^9.1.7",
+    "vue3-jazzicon": "^0.1.2",
+    "vuex-persist": "^3.1.3",
+    "web3modal": "^1.9.4"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/vue3-essential",
+      "eslint:recommended",
+      "prettier"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "rules": {
+      "vue/multi-word-component-names": "off",
+      "vue/no-multiple-template-root": "off"
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

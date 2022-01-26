@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+
+/* @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap"); */
+
+html {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+.font-cal {
+  font-family: "Cal Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+
+@tailwind utilities;
+
+@layer utilities {
+  @variants responsive {
+    .text-shadow {
+      text-shadow: 0px 0px 12px rgba(0, 0, 0, 0.4);
+    }
+    .text-shadow-md {
+      text-shadow: 0px 0px 12px rgba(0, 0, 0, 0.5);
+    }
+    .text-shadow-lg {
+      text-shadow: 0px 0px 12px rgba(0, 0, 0, 0.8);
+    }
+    .text-shadow-none {
+      text-shadow: none;
+    }
+  }
+}
