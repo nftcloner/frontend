@@ -39,12 +39,33 @@
       >
         Connect Wallet
       </div>
-      <div
-        v-else
-        @click="mintNFT"
-        class="bg-purple-500 hover:bg-fuchsia-500 text-white font-bold text-2xl w-full sm:w-auto px-10 py-3 border-4 border-yellow-300 rounded-lg text-center cursor-pointer"
-      >
-        Clone {{ nftName }}
+      <div v-else>
+        <div v-if="tokenID == -1" class="flex flex-col items-center gap-5">
+          <div
+            class="flex gap-x-5 items-center w-full bg-gray-100 rounded-lg drop-shadow overflow-auto p-5 py-3 text-gray-800"
+          >
+            <ExclamationIcon class="w-20 text-amber-500" />
+            <p class="flex-initial text-sm sm:text-base">
+              You don't have the NFT Cloner token yet, you can mint it for free
+              but you still have to pay for the gas. Once your token is minted,
+              you can update metadata indefinitively.<br>
+            </p>
+          </div>
+          <div
+            @click="mintNFT"
+            class="bg-purple-500 hover:bg-fuchsia-500 text-white font-bold text-2xl w-full sm:w-auto px-10 py-3 border-4 border-yellow-300 rounded-lg text-center cursor-pointer"
+          >
+            Mint the token
+          </div>
+          <i class="text-xs text-gray-600 text-center block -mt-4">You can set a low gas price to save your money.</i>
+        </div>
+        <div
+          v-else
+          @click="updateMetadata"
+          class="bg-purple-500 hover:bg-fuchsia-500 text-white font-bold text-2xl w-full sm:w-auto px-10 py-3 border-4 border-yellow-300 rounded-lg text-center cursor-pointer"
+        >
+          Clone {{ nftName }}
+        </div>
       </div>
     </div>
 
@@ -70,13 +91,14 @@ import { useStore } from "vuex";
 import axios from "axios";
 import { ethers } from "ethers";
 import { defaultProvider, provider } from "../../store/modules/web3";
-import { ChevronDoubleRightIcon } from "@heroicons/vue/solid";
+import { ChevronDoubleRightIcon, ExclamationIcon } from "@heroicons/vue/solid";
 import NFTClonerABI from "./NFTCloner.abi.json";
 
 export default {
   name: "Cloner",
   components: {
     ChevronDoubleRightIcon,
+    ExclamationIcon,
   },
   setup() {
     const store = useStore();
@@ -90,6 +112,7 @@ export default {
     );
     const nftContract = ref("");
     const nftID = ref(0);
+    const tokenID = ref(-1);
 
     const NFTCloner = new ethers.Contract(
       process.env.VUE_APP_NFT_ADDRESS,
@@ -123,6 +146,27 @@ export default {
 
     const mintNFT = async () => {
       const signer = provider.getSigner();
+      NFTCloner.connect(signer)
+        .mint()
+        .then((tx) => {
+          tx.wait()
+            .then(() => {
+              NFTCloner.tokenByOwner(store.state.web3.address)
+                .then((tokenId) => {
+                  tokenID.value = tokenId.toNumber();
+                })
+                .catch((err) => {
+                  tokenID.value = -1;
+                  console.log(err);
+                });
+            })
+            .catch(console.log);
+        })
+        .catch(console.log);
+    };
+
+    const updateMetadata = async () => {
+      const signer = provider.getSigner();
 
       const domain = {
         name: "NFTCloner",
@@ -149,19 +193,20 @@ export default {
         .then(() => {
           sendRequest(nftContract.value, nftID.value, signature);
         })
-        .catch(() => {
-          // sendRequest(nftContract.value, nftID.value, signature); // FIXME: remove
-          NFTCloner.connect(signer)
-            .mint()
-            .then((tx) => {
-              tx.wait()
-                .then(() => {
-                  sendRequest(nftContract.value, nftID.value, signature);
-                })
-                .catch(console.log);
-            })
-            .catch(console.log);
-        });
+        .catch(console.log);
+      // .catch(() => {
+      // // sendRequest(nftContract.value, nftID.value, signature); // FIXME: remove
+      // NFTCloner.connect(signer)
+      //   .mint()
+      //   .then((tx) => {
+      //     tx.wait()
+      //       .then(() => {
+      //         sendRequest(nftContract.value, nftID.value, signature);
+      //       })
+      //       .catch(console.log);
+      //   })
+      //   .catch(console.log);
+      // });
     };
 
     const sendRequest = async (contract, tokenId, signature) => {
@@ -187,6 +232,21 @@ export default {
         .catch(console.log);
     };
 
+    store.subscribe(async (mutation, state) => {
+      if (mutation.type === "web3/connected" && mutation.payload === true) {
+        // console.log(
+        //   (await NFTCloner.tokenByOwner(state.web3.address)).toNumber()
+        // );
+        NFTCloner.tokenByOwner(state.web3.address)
+          .then((tokenId) => {
+            tokenID.value = tokenId.toNumber();
+          })
+          .catch(() => {
+            tokenID.value = -1;
+          });
+      }
+    });
+
     onMounted(async () => {
       // console.log(
       //   (await NFTCloner.tokenByOwner(store.state.web3.address)).toNumber()
@@ -210,8 +270,10 @@ export default {
       nftImageURL,
       nftContract,
       nftID,
+      tokenID,
       loadNFT,
       mintNFT,
+      updateMetadata,
     };
   },
 };
