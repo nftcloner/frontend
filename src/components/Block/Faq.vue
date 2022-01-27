@@ -23,7 +23,7 @@
       </ol>
       <h3 class="font-bold mt-10 mb-5">Can I use it on Twitter NFT?</h3>
       <p>
-        Yes! NFT Cloner is a ERC721 token comaptible with OpenSea and Twitter.
+        Yes! NFT Cloner is a ERC721 token compatible with OpenSea and Twitter.
       </p>
     </div>
   </div>

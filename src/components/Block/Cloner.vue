@@ -48,7 +48,7 @@
             <p class="flex-initial text-sm sm:text-base">
               You don't have the NFT Cloner token yet, you can mint it for free
               but you still have to pay for the gas. Once your token is minted,
-              you can update metadata indefinitively.<br />
+              you can update the metadata indefinitively.
             </p>
           </div>
           <div
