@@ -1,15 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="<%= BASE_URL %>favicon.png">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta name="description" content="Clone your favourite NFT and display it as your profile picture for free.">
+    <meta name="keywords" content="nft, ethereum, clone, opensea, twitter, profile, picture, profile picutre, copy, duplicate, right, click, save, right click save">
+    <link rel="icon" href="<%= BASE_URL %>favicon.png" />
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <meta
+      property="og:title"
+      content="NFT Cloner"
+    />
+    <meta property="og:url" content="https://nftcloner.xyz/" />
+    <meta property="og:image" content="https://nftcloner.xyz/og.png" />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:description"
+      content="Clone your favourite NFT and display it as your profile picture for free."
+    />
+    <meta property="og:locale" content="en_US" />
   </head>
   <body>
     <noscript>
-      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+      <strong
+        >We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work
+        properly without JavaScript enabled. Please enable it to
+        continue.</strong
+      >
     </noscript>
     <div id="app"></div>
     <!-- built files will be auto injected -->
