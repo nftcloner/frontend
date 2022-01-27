@@ -1,7 +1,8 @@
 <template>
   <div>
     <router-view />
-    <!-- <Notifications /> -->
+    <Wallet />
+    <Notifications />
   </div>
 </template>
 
