@@ -145,8 +145,9 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+          console.log(err.response);
           store.dispatch("notify", [
-            "Failed to get token metadata: " + err.message,
+            "Failed to get token metadata: " + JSON.stringify(err.response.data),
             "red",
           ]);
         });
@@ -215,20 +216,6 @@ export default {
         tokenId: nftID.value,
       };
 
-      // const signature = await signer._signTypedData(domain, types, value);
-
-      // NFTCloner.tokenByOwner(store.state.web3.address)
-      //   .then(() => {
-      //     sendRequest(nftContract.value, nftID.value, signature);
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //     store.dispatch("notify", [
-      //       "Faile to get owner token ID: " + err.message,
-      //       "red",
-      //     ]);
-      //   });
-
       signer
         ._signTypedData(domain, types, value)
         .then((signature) => {
@@ -268,7 +255,7 @@ export default {
       axios
         .post(
           "https://us-east1-nftcloner.cloudfunctions.net/v1/metadata/update",
-          // "http://localhost:8090/hello",
+          // "http://localhost:8090/v1/metadata/update",
           params,
           config
         )
@@ -277,10 +264,8 @@ export default {
         })
         .catch((err) => {
           console.log(err);
-          store.dispatch("notify", [
-            "Failed to update metadata: " + err.message,
-            "red",
-          ]);
+          console.log(err.response);
+          store.dispatch("notify", [err.response.data.error, "red"]);
         });
     };
 
