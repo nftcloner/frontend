@@ -48,7 +48,7 @@
             <p class="flex-initial text-sm sm:text-base">
               You don't have the NFT Cloner token yet, you can mint it for free
               but you still have to pay for the gas. Once your token is minted,
-              you can update metadata indefinitively.<br>
+              you can update metadata indefinitively.<br />
             </p>
           </div>
           <div
@@ -57,7 +57,9 @@
           >
             Mint the token
           </div>
-          <i class="text-xs text-gray-600 text-center block -mt-4">You can set a low gas price to save your money.</i>
+          <i class="text-xs text-gray-600 text-center block -mt-4"
+            >You can set a low gas price to save your money.</i
+          >
         </div>
         <div
           v-else
@@ -126,21 +128,27 @@ export default {
 
       const match = regex.exec(openseaURL.value);
 
-      if (match.length !== 3) {
-        alert("Invalid URL");
+      if (match == null || match.length !== 3) {
+        store.dispatch("notify", ["Invalid OpenSea URL", "orange"]);
         return;
       }
+
       axios
         .get(`https://api.opensea.io/api/v1/asset/${match[1]}/${match[2]}`)
         .then((res) => {
-          // console.log(res.data);
-
           nftContract.value = match[1];
           nftID.value = match[2];
 
           nftName.value = res.data.name;
           nftImageURL.value = res.data.image_url;
           nftLoaded.value = true;
+        })
+        .catch((err) => {
+          console.log(err);
+          store.dispatch("notify", [
+            "Failed to get token metadata: " + err.message,
+            "red",
+          ]);
         });
     };
 
@@ -149,8 +157,12 @@ export default {
       NFTCloner.connect(signer)
         .mint()
         .then((tx) => {
+          store.dispatch("notify", [`Transaction ${tx.hash} sent`, "blue"]);
+
           tx.wait()
             .then(() => {
+              store.dispatch("notify", ["Token minted!", "green"]);
+
               NFTCloner.tokenByOwner(store.state.web3.address)
                 .then((tokenId) => {
                   tokenID.value = tokenId.toNumber();
@@ -158,11 +170,27 @@ export default {
                 .catch((err) => {
                   tokenID.value = -1;
                   console.log(err);
+                  store.dispatch("notify", [
+                    "Failed to get owner token ID: " + err.message,
+                    "red",
+                  ]);
                 });
             })
-            .catch(console.log);
+            .catch((err) => {
+              console.log(err);
+              store.dispatch("notify", [
+                "Failed to transaction receipt: " + err.message,
+                "red",
+              ]);
+            });
         })
-        .catch(console.log);
+        .catch((err) => {
+          console.log(err);
+          store.dispatch("notify", [
+            "Failed to send mint transaction: " + err.message,
+            "red",
+          ]);
+        });
     };
 
     const updateMetadata = async () => {
@@ -187,26 +215,42 @@ export default {
         tokenId: nftID.value,
       };
 
-      const signature = await signer._signTypedData(domain, types, value);
+      // const signature = await signer._signTypedData(domain, types, value);
 
-      NFTCloner.tokenByOwner(store.state.web3.address)
-        .then(() => {
-          sendRequest(nftContract.value, nftID.value, signature);
-        })
-        .catch(console.log);
-      // .catch(() => {
-      // // sendRequest(nftContract.value, nftID.value, signature); // FIXME: remove
-      // NFTCloner.connect(signer)
-      //   .mint()
-      //   .then((tx) => {
-      //     tx.wait()
-      //       .then(() => {
-      //         sendRequest(nftContract.value, nftID.value, signature);
-      //       })
-      //       .catch(console.log);
+      // NFTCloner.tokenByOwner(store.state.web3.address)
+      //   .then(() => {
+      //     sendRequest(nftContract.value, nftID.value, signature);
       //   })
-      //   .catch(console.log);
-      // });
+      //   .catch((err) => {
+      //     console.log(err);
+      //     store.dispatch("notify", [
+      //       "Faile to get owner token ID: " + err.message,
+      //       "red",
+      //     ]);
+      //   });
+
+      signer
+        ._signTypedData(domain, types, value)
+        .then((signature) => {
+          NFTCloner.tokenByOwner(store.state.web3.address)
+            .then(() => {
+              sendRequest(nftContract.value, nftID.value, signature);
+            })
+            .catch((err) => {
+              console.log(err);
+              store.dispatch("notify", [
+                "Failed to get owner token ID: " + err.message,
+                "red",
+              ]);
+            });
+        })
+        .catch((err) => {
+          console.log(err);
+          store.dispatch("notify", [
+            "Failed to sign request: " + err.message,
+            "red",
+          ]);
+        });
     };
 
     const sendRequest = async (contract, tokenId, signature) => {
@@ -228,15 +272,20 @@ export default {
           params,
           config
         )
-        .then(console.log)
-        .catch(console.log);
+        .then(() => {
+          store.dispatch("notify", ["Metadata updated!", "green"]);
+        })
+        .catch((err) => {
+          console.log(err);
+          store.dispatch("notify", [
+            "Failed to update metadata: " + err.message,
+            "red",
+          ]);
+        });
     };
 
     store.subscribe(async (mutation, state) => {
       if (mutation.type === "web3/connected" && mutation.payload === true) {
-        // console.log(
-        //   (await NFTCloner.tokenByOwner(state.web3.address)).toNumber()
-        // );
         NFTCloner.tokenByOwner(state.web3.address)
           .then((tokenId) => {
             tokenID.value = tokenId.toNumber();
@@ -247,21 +296,7 @@ export default {
       }
     });
 
-    onMounted(async () => {
-      // console.log(
-      //   (await NFTCloner.tokenByOwner(store.state.web3.address)).toNumber()
-      // );
-      // console.log(await NFTCloner.tokenByOwner("0x0000000000000000000000000000000000000000"));
-      // NFTCloner.tokenByOwner("0x0000000000000000000000000000000000000000")
-      //   .then(console.log)
-      //   .catch(console.log);
-      // setTimeout(() => {
-      //   NFTCloner.connect(provider.getSigner())
-      //     .mint()
-      //     .then(console.log)
-      //     .catch(console.log);
-      // }, 5000);
-    });
+    onMounted(async () => {});
 
     return {
       openseaURL,
